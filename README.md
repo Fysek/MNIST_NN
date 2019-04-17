@@ -1,6 +1,8 @@
 # MNIST_NN
 Some links for study:
 
+https://www.katacoda.com/basiafusinska/courses/tensorflow-getting-started/tensorflow-mnist-beginner
+
 http://python.astrotech.io/machine-learning/neural-network.html#przetwarzanie-obrazow-na-przykladzie-rozpoznawania-odrecznie-napisanych-cyfr-mnist
 
 http://neuralnetworksanddeeplearning.com/chap1.html
