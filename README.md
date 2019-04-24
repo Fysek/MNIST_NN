@@ -1,6 +1,10 @@
 # MNIST_NN
 Some links for study:
 
+https://towardsdatascience.com/a-simple-2d-cnn-for-mnist-digit-recognition-a998dbc1e79a
+
+http://cs231n.github.io/convolutional-networks/
+
 https://www.katacoda.com/basiafusinska/courses/tensorflow-getting-started/tensorflow-mnist-beginner
 
 http://python.astrotech.io/machine-learning/neural-network.html#przetwarzanie-obrazow-na-przykladzie-rozpoznawania-odrecznie-napisanych-cyfr-mnist
