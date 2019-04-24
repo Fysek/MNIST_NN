@@ -1,6 +1,10 @@
 # MNIST_NN
 Some links for study:
 
+https://yashk2810.github.io/Applying-Convolutional-Neural-Network-on-the-MNIST-dataset/
+
+http://parneetk.github.io/blog/cnn-mnist/
+
 https://towardsdatascience.com/a-simple-2d-cnn-for-mnist-digit-recognition-a998dbc1e79a
 
 http://cs231n.github.io/convolutional-networks/
