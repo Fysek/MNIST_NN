@@ -4,6 +4,7 @@ import tensorflow as tf
 import numpy as np
 from tensorflow.keras import Model, layers
 from tensorflow.keras.datasets import mnist
+import random
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 x_train, x_test = np.array(x_train, np.float32), np.array(x_test, np.float32)
@@ -119,7 +120,8 @@ pred = conv_net(x_test)
 print("Test Accuracy: %f" % accuracy(pred, y_test))
 
 n_images = 20
-test_images = x_test[5:n_images+5]
+rand = random.randint(1, 201)
+test_images = x_test[rand*n_images:n_images*(1+rand)]
 predictions = conv_net(test_images)
 
 # Display image and model prediction.
