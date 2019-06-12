@@ -6,19 +6,19 @@ from tensorflow.keras import Model, layers
 from tensorflow.keras.datasets import mnist
 import random
 
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
-x_train, x_test = np.array(x_train, np.float32), np.array(x_test, np.float32)
-x_train, x_test = x_train / 255., x_test / 255.
+(X_train, Y_train), (X_test, Y_test) = mnist.load_data()
+X_train, X_test = np.array(X_train, np.float32), np.array(X_test, np.float32)
+X_train, X_test = X_train / 255., X_test / 255.
 
 # training parameters.
-num_classes = 10
+classes = 10
 learning_rate = 0.001
-training_steps = 200
+train_steps = 200
 batch_size = 128
 display_step = 10
 
 # slice data
-train_data = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+train_data = tf.data.Dataset.from_tensor_slices((X_train, Y_train))
 train_data = train_data.repeat().shuffle(5000).batch(batch_size).prefetch(1)
 
 # network parameters.
@@ -31,29 +31,25 @@ class ConvNet(Model):
     # Set layers.
     def __init__(self):
         super(ConvNet, self).__init__()
-        # Convolution Layer with 32 filters and a kernel size of 5.
+        # convolution Layer with 32 filters and a kernel size of 5.
         self.conv1 = layers.Conv2D(32, kernel_size=5, activation=tf.nn.relu)
-        # Max Pooling (down-sampling) with kernel size of 2 and strides of 2.
+        # max Pooling (down-sampling) with kernel size of 2 and strides of 2.
         self.maxpool1 = layers.MaxPool2D(2, strides=2)
-
-        # Convolution Layer with 64 filters and a kernel size of 3.
+        # convolution Layer with 64 filters and a kernel size of 3.
         self.conv2 = layers.Conv2D(64, kernel_size=3, activation=tf.nn.relu)
-        # Max Pooling (down-sampling) with kernel size of 2 and strides of 2.
+        # max Pooling (down-sampling) with kernel size of 2 and strides of 2.
         self.maxpool2 = layers.MaxPool2D(2, strides=2)
-
-        # Flatten the data to a 1-D vector for the fully connected layer.
+        # flatten the data to a 1-D vector for the fully connected layer.
         self.flatten = layers.Flatten()
-
-        # Fully connected layer.
+        # fully connected layer.
         self.fc1 = layers.Dense(1024)
-        # Apply Dropout (if is_training is False, dropout is not applied).
+        # apply Dropout (if if_training is False, dropout is not applicable).
         self.dropout = layers.Dropout(rate=0.5)
-
-        # Output layer, class prediction.
-        self.out = layers.Dense(num_classes)
+        # output layer, class prediction.
+        self.out = layers.Dense(classes)
 
     # Set forward pass.
-    def call(self, x, is_training=False):
+    def call(self, x, if_training=False):
         x = tf.reshape(x, [-1, 28, 28, 1])
         x = self.conv1(x)
         x = self.maxpool1(x)
@@ -61,9 +57,9 @@ class ConvNet(Model):
         x = self.maxpool2(x)
         x = self.flatten(x)
         x = self.fc1(x)
-        x = self.dropout(x, training=is_training)
+        x = self.dropout(x, training=if_training)
         x = self.out(x)
-        if not is_training:
+        if not if_training:
             # tf cross entropy expect logits without softmax, so only
             # apply softmax when not training.
             x = tf.nn.softmax(x)
@@ -81,9 +77,9 @@ def cross_entropy_loss(x, y):
     return tf.reduce_mean(loss)
 
 # Accuracy metric.
-def accuracy(y_pred, y_true):
+def accuracy(Y_predict, Y_test_mnist):
     # Predicted class is the index of highest score in prediction vector (i.e. argmax).
-    correct_prediction = tf.equal(tf.argmax(y_pred, 1), tf.cast(y_true, tf.int64))
+    correct_prediction = tf.equal(tf.argmax(Y_predict, 1), tf.cast(Y_test_mnist, tf.int64))
     return tf.reduce_mean(tf.cast(correct_prediction, tf.float32), axis=-1)
 
 # Stochastic gradient descent optimizer.
@@ -93,7 +89,7 @@ def run_optimization(x, y):
     # Wrap computation inside a GradientTape for automatic differentiation.
     with tf.GradientTape() as g:
         # Forward pass.
-        pred = conv_net(x, is_training=True)
+        pred = conv_net(x, if_training=True)
         # Compute loss.
         loss = cross_entropy_loss(pred, y)
 
@@ -107,21 +103,21 @@ def run_optimization(x, y):
     optimizer.apply_gradients(zip(gradients, trainable_variables))
 
 # Run training for the given number of steps.
-for step, (batch_x, batch_y) in enumerate(train_data.take(training_steps), 1):
-     # Run the optimization to update W and b values.
+for step, (batch_x, batch_y) in enumerate(train_data.take(train_steps), 1):
+    # Run the optimization to update W and b values.
     run_optimization(batch_x, batch_y)
-    if step % display_step == 0:
+    if step % display_step == 0 or step == 1:
         pred = conv_net(batch_x)
         loss = cross_entropy_loss(pred, batch_y)
         acc = accuracy(pred, batch_y)
         print("step: %i, loss: %f, accuracy: %f" % (step, loss, acc))
 
-pred = conv_net(x_test)
-print("Test Accuracy: %f" % accuracy(pred, y_test))
+pred = conv_net(X_test)
+print("Test Accuracy: %f" % accuracy(pred, Y_test))
 
 n_images = 20
 rand = random.randint(1, 201)
-test_images = x_test[rand*n_images:n_images*(1+rand)]
+test_images = X_test[rand*n_images:n_images*(1+rand)]
 predictions = conv_net(test_images)
 
 # Display image and model prediction.
